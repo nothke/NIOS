@@ -59,8 +59,7 @@ namespace StdLib.Ecma48
 			currentChar.Reset();
 		}
 
-		public event Action OnBeep;
-
+		//public event Action OnBeep;
 
 		int cursorRow;
 		int cursorColumn;

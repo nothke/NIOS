@@ -57,7 +57,7 @@ public partial class OperatingSystem : IBootSectorProgram
 		}
 		catch (ThreadInterruptedException e)
 		{
-
+			UnityEngine.Debug.LogException(e);
 		}
 		catch (Exception e)
 		{

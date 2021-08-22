@@ -63,7 +63,8 @@ public class TextDisplayDevice : NeitriBehavior, IDevice
 
 	DateTime lastSignalReceived = DateTime.MinValue;
 	DateTime lastUpdate = DateTime.MinValue;
-	bool noMessageReceivedPrinted = false;
+	//bool noMessageReceivedPrinted = false;
+
 	void DisplayUpdate()
 	{
 		const int timeoutSeconds = 60;
@@ -106,8 +107,8 @@ public class TextDisplayDevice : NeitriBehavior, IDevice
 		var defaultForegroundColor = StdLib.Ecma48.Color.White;
 		var lastForegroundColor = defaultForegroundColor;
 
-		var lastBold = false;
-		var shouldEndBoldElement = false;
+		//var lastBold = false;
+		//var shouldEndBoldElement = false;
 
 		var sb = new StringBuilder();
 		for (uint row = 0; row < device.RowsCount; row++)

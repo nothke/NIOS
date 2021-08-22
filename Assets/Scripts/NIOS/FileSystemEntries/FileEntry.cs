@@ -22,8 +22,8 @@ public class FileEntry : FileSystemEntry
 	bool exists = false;
 	DirEntry parent;
 	long length;
-	bool initialized = false;
 
+	public bool initialized { get; private set; }
 
 	public FileEntry(string name, DirEntry parent, bool exists = false) : base(name, parent)
 	{
