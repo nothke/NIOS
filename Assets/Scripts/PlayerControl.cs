@@ -95,8 +95,7 @@ public class PlayerControl : MonoBehaviour
 						data.player = this;
 						p.OnTouched(data);
 					}
-					else
-						Debug.Log(hitInfo.transform.root.gameObject.name + " does not have IPlayerTouched component");
+					//else Debug.Log(hitInfo.transform.root.gameObject.name + " does not have IPlayerTouched component");
 				}
 
 			}
