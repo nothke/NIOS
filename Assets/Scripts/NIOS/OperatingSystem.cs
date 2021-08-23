@@ -109,7 +109,7 @@ namespace NIOS
 
                         var instance = Activator.CreateInstance(type);
 
-                        if (instance == null) 
+                        if (instance == null)
                             throw new Error("failed to create instance of " + type);
                         var program = (ProgramBase)instance;
 
@@ -345,6 +345,33 @@ namespace NIOS
         {
             var password = api.Console.ReadPassword('*');
             return Utils.GetStringSha256Hash(password);
+        }
+
+        public const string MakeType = "make_c_sharp_instance_of:";
+
+        /// <summary>
+        /// A utility for quickly installing a program by CSharp class into /bin
+        /// </summary>
+        public bool TryInstallProgram(string name, Type csClass)
+        {
+            if (!api.Directory.Exists("/bin"))
+            {
+                api.Console.WriteLine("warning: attempting to install a program, but /bin not found");
+                return false;
+            }
+
+            var dir = api.Directory.GetDirEntry("/bin");
+            
+            if (File.Exists(dir.FullName + name))
+            {
+                api.Console.WriteLine("warning: attempting to install a program, but program already exists at the same path");
+                return false;
+            }
+            
+            var file = dir.GetFileEntry(name);
+            file.WriteAllText(MakeType + csClass.FullName);
+
+            return true;
         }
     }
 }

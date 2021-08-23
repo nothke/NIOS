@@ -222,6 +222,7 @@ namespace NIOS
             }
         }
 
+        // TODO: Why are arguments not split by space?
         bool ExecuteCommand_2(Session session, string cmd)
         {
             var tokenizer = new CmdTokenizer(cmd);
