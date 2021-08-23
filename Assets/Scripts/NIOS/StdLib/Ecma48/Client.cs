@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace StdLib.Ecma48
+namespace NIOS.StdLib.Ecma48
 {
 	/// <summary>
 	/// Should be similar to http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/

@@ -8,223 +8,227 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
-using StdLib;
 
-public class TextDisplayDevice : NeitriBehavior, IDevice
+using NIOS.StdLib;
+
+namespace NIOS.Unity
 {
-	public Text textComponent;
-	public DeviceType DeviceType { get { return DeviceType.Display; } }
-	Encoding Encoding { get { return Encoding.ASCII; } }
-
-	MyWriteStream myWriteStream;
-
-	StdLib.Ecma48.Device device;
-	StdLib.Ecma48.Client client;
-	ulong deviceLastDataVersion;
-
-	Guid guid;
-	public Guid Guid { get { return guid; } }
-
-	protected override void Start()
+	public class TextDisplayDevice : NeitriBehavior, IDevice
 	{
-		base.Start();
+		public Text textComponent;
+		public DeviceType DeviceType { get { return DeviceType.Display; } }
+		Encoding Encoding { get { return Encoding.ASCII; } }
 
-		guid = Utils.IntToGuid(GetInstanceID());
+		MyWriteStream myWriteStream;
 
-		if (textComponent == null) textComponent = GetComponentInChildren<Text>(); ;
+		StdLib.Ecma48.Device device;
+		StdLib.Ecma48.Client client;
+		ulong deviceLastDataVersion;
 
-		myWriteStream = new MyWriteStream(this);
+		Guid guid;
+		public Guid Guid { get { return guid; } }
 
-		TextGenerator textGen = new TextGenerator();
-		TextGenerationSettings generationSettings = textComponent.GetGenerationSettings(textComponent.rectTransform.rect.size);
-
-		var areaHeight = textComponent.rectTransform.rect.height;
-		float textHeight = textGen.GetPreferredHeight("M", generationSettings);
-		var maxNumberOfLines = (uint)Mathf.FloorToInt(areaHeight / textHeight);
-
-		var areaWidth = textComponent.rectTransform.rect.width;
-		float textWidth = textGen.GetPreferredWidth("M", generationSettings);
-		var maxNumberOfColumns = (uint)Mathf.FloorToInt(areaWidth / textWidth);
-
-		device = new StdLib.Ecma48.Device(maxNumberOfColumns, maxNumberOfLines);
-		var writer = new StreamWriter(OpenWrite());
-		writer.AutoFlush = true;
-		client = new StdLib.Ecma48.Client(writer);
-
-	}
-
-
-	protected override void Update()
-	{
-		base.Update();
-
-		DisplayUpdate();
-	}
-
-	DateTime lastSignalReceived = DateTime.MinValue;
-	DateTime lastUpdate = DateTime.MinValue;
-	//bool noMessageReceivedPrinted = false;
-
-	void DisplayUpdate()
-	{
-		const int timeoutSeconds = 60;
-		if (lastSignalReceived.IsOver(seconds: timeoutSeconds).InPastComparedTo(World.UtcNow))
+		protected override void Start()
 		{
-			if (lastUpdate.IsOver(seconds: 1).InPastComparedTo(World.UtcNow))
-			{
-				lastUpdate = World.UtcNow;
-				var backupLastSingalReceived = lastSignalReceived;
+			base.Start();
 
-				client.EraseDisplay();
-				client.WriteLine();
-				client.WriteLine();
-				if(backupLastSingalReceived == DateTime.MinValue)
-					client.WriteLine("no signal received");
-				else
-					client.WriteLine("last signal received " + World.UtcNow.Subtract(backupLastSingalReceived).TotalSeconds.Round().ToInt() + " seconds ago");
-				client.WriteLine("debug info:");
-				client.WriteLine("	current time: " + World.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
-				client.WriteLine("	columns: " + device.ColumnsCount);
-				client.WriteLine("	rows: " + device.RowsCount);
-				client.WriteLine();
-				client.WriteLine();
+			guid = Utils.IntToGuid(GetInstanceID());
 
-				lastSignalReceived = backupLastSingalReceived;
-			}
+			if (textComponent == null) textComponent = GetComponentInChildren<Text>(); ;
+
+			myWriteStream = new MyWriteStream(this);
+
+			TextGenerator textGen = new TextGenerator();
+			TextGenerationSettings generationSettings = textComponent.GetGenerationSettings(textComponent.rectTransform.rect.size);
+
+			var areaHeight = textComponent.rectTransform.rect.height;
+			float textHeight = textGen.GetPreferredHeight("M", generationSettings);
+			var maxNumberOfLines = (uint)Mathf.FloorToInt(areaHeight / textHeight);
+
+			var areaWidth = textComponent.rectTransform.rect.width;
+			float textWidth = textGen.GetPreferredWidth("M", generationSettings);
+			var maxNumberOfColumns = (uint)Mathf.FloorToInt(areaWidth / textWidth);
+
+			device = new StdLib.Ecma48.Device(maxNumberOfColumns, maxNumberOfLines);
+			var writer = new StreamWriter(OpenWrite());
+			writer.AutoFlush = true;
+			client = new StdLib.Ecma48.Client(writer);
+
 		}
 
 
-		myWriteStream.UnityUpdate();
-		UpdateTextArea();
-	}
-
-
-	void UpdateTextArea()
-	{
-		if (device.DataVersion == deviceLastDataVersion) return;
-		deviceLastDataVersion = device.DataVersion;
-
-		var defaultForegroundColor = StdLib.Ecma48.Color.White;
-		var lastForegroundColor = defaultForegroundColor;
-
-		//var lastBold = false;
-		//var shouldEndBoldElement = false;
-
-		var sb = new StringBuilder();
-		for (uint row = 0; row < device.RowsCount; row++)
+		protected override void Update()
 		{
-			for (uint column = 0; column < device.ColumnsCount; column++)
+			base.Update();
+
+			DisplayUpdate();
+		}
+
+		DateTime lastSignalReceived = DateTime.MinValue;
+		DateTime lastUpdate = DateTime.MinValue;
+		//bool noMessageReceivedPrinted = false;
+
+		void DisplayUpdate()
+		{
+			const int timeoutSeconds = 60;
+			if (lastSignalReceived.IsOver(seconds: timeoutSeconds).InPastComparedTo(World.UtcNow))
 			{
-				var c = device[column, row];
-				if (lastForegroundColor != c.foregroundColor)
+				if (lastUpdate.IsOver(seconds: 1).InPastComparedTo(World.UtcNow))
 				{
-					/*
-					// buggy
-					if (shouldEndBoldElement)
-					{
-						sb.Append("</b>");
-						shouldEndBoldElement = false;
-						lastBold = false;
-					}
-					if (c.bold)
-					{
-						sb.Append("<b>");
-						shouldEndBoldElement = true;
-						lastBold = true;
-					}
-					*/
-					if (lastForegroundColor != defaultForegroundColor)
-					{
-						sb.Append("</color>");
-						lastForegroundColor = defaultForegroundColor;
-					}
-					if (c.foregroundColor != defaultForegroundColor)
-					{
-						sb.Append("<color=" + c.foregroundColor.ToString().ToLower() + ">");
-						lastForegroundColor = c.foregroundColor;
-					}
+					lastUpdate = World.UtcNow;
+					var backupLastSingalReceived = lastSignalReceived;
+
+					client.EraseDisplay();
+					client.WriteLine();
+					client.WriteLine();
+					if (backupLastSingalReceived == DateTime.MinValue)
+						client.WriteLine("no signal received");
+					else
+						client.WriteLine("last signal received " + World.UtcNow.Subtract(backupLastSingalReceived).TotalSeconds.Round().ToInt() + " seconds ago");
+					client.WriteLine("debug info:");
+					client.WriteLine("	current time: " + World.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
+					client.WriteLine("	columns: " + device.ColumnsCount);
+					client.WriteLine("	rows: " + device.RowsCount);
+					client.WriteLine();
+					client.WriteLine();
+
+					lastSignalReceived = backupLastSingalReceived;
 				}
-				sb.Append(c.character);
 			}
-			sb.AppendLine();
+
+
+			myWriteStream.UnityUpdate();
+			UpdateTextArea();
 		}
 
-		if (lastForegroundColor != defaultForegroundColor)
+
+		void UpdateTextArea()
 		{
-			sb.Append("</color>");
-			lastForegroundColor = defaultForegroundColor;
-		}
+			if (device.DataVersion == deviceLastDataVersion) return;
+			deviceLastDataVersion = device.DataVersion;
 
-		textComponent.text = sb.ToString();
-	}
+			var defaultForegroundColor = StdLib.Ecma48.Color.White;
+			var lastForegroundColor = defaultForegroundColor;
 
+			//var lastBold = false;
+			//var shouldEndBoldElement = false;
 
-	class MyWriteStream : Stream
-	{
-		string pendingWriteText = string.Empty;
-		TextDisplayDevice p;
-
-		public override bool CanRead { get { return false; } }
-
-		public override bool CanSeek { get { return false; } }
-
-		public override bool CanWrite { get { return true; } }
-
-		public override long Length { get { return long.MaxValue; } }
-
-		public override long Position { get { return pendingWriteText.Length; } set { throw new NotImplementedException(); } }
-
-		public MyWriteStream(TextDisplayDevice p)
-		{
-			this.p = p;
-		}
-
-		public void UnityUpdate()
-		{
-			if (pendingWriteText.Length > 0)
+			var sb = new StringBuilder();
+			for (uint row = 0; row < device.RowsCount; row++)
 			{
-				p.device.Parse(pendingWriteText);
-				pendingWriteText = string.Empty;
+				for (uint column = 0; column < device.ColumnsCount; column++)
+				{
+					var c = device[column, row];
+					if (lastForegroundColor != c.foregroundColor)
+					{
+						/*
+						// buggy
+						if (shouldEndBoldElement)
+						{
+							sb.Append("</b>");
+							shouldEndBoldElement = false;
+							lastBold = false;
+						}
+						if (c.bold)
+						{
+							sb.Append("<b>");
+							shouldEndBoldElement = true;
+							lastBold = true;
+						}
+						*/
+						if (lastForegroundColor != defaultForegroundColor)
+						{
+							sb.Append("</color>");
+							lastForegroundColor = defaultForegroundColor;
+						}
+						if (c.foregroundColor != defaultForegroundColor)
+						{
+							sb.Append("<color=" + c.foregroundColor.ToString().ToLower() + ">");
+							lastForegroundColor = c.foregroundColor;
+						}
+					}
+					sb.Append(c.character);
+				}
+				sb.AppendLine();
+			}
+
+			if (lastForegroundColor != defaultForegroundColor)
+			{
+				sb.Append("</color>");
+				lastForegroundColor = defaultForegroundColor;
+			}
+
+			textComponent.text = sb.ToString();
+		}
+
+
+		class MyWriteStream : Stream
+		{
+			string pendingWriteText = string.Empty;
+			TextDisplayDevice p;
+
+			public override bool CanRead { get { return false; } }
+
+			public override bool CanSeek { get { return false; } }
+
+			public override bool CanWrite { get { return true; } }
+
+			public override long Length { get { return long.MaxValue; } }
+
+			public override long Position { get { return pendingWriteText.Length; } set { throw new NotImplementedException(); } }
+
+			public MyWriteStream(TextDisplayDevice p)
+			{
+				this.p = p;
+			}
+
+			public void UnityUpdate()
+			{
+				if (pendingWriteText.Length > 0)
+				{
+					p.device.Parse(pendingWriteText);
+					pendingWriteText = string.Empty;
+				}
+			}
+
+			public override void Flush()
+			{
+			}
+
+			public override int Read(byte[] buffer, int offset, int count)
+			{
+				throw new NotSupportedException();
+			}
+
+			public override long Seek(long offset, SeekOrigin origin)
+			{
+				throw new NotSupportedException();
+			}
+
+			public override void SetLength(long value)
+			{
+				throw new NotSupportedException();
+			}
+
+			public override void Write(byte[] buffer, int offset, int count)
+			{
+				p.lastSignalReceived = World.UtcNow;
+				var dst = new byte[count];
+				Array.Copy(buffer, offset, dst, 0, count);
+				pendingWriteText += p.Encoding.GetString(dst);
 			}
 		}
 
-		public override void Flush()
+		public Stream OpenRead()
 		{
+			return Stream.Null;
 		}
 
-		public override int Read(byte[] buffer, int offset, int count)
+		public Stream OpenWrite()
 		{
-			throw new NotSupportedException();
+			return myWriteStream;
 		}
 
-		public override long Seek(long offset, SeekOrigin origin)
-		{
-			throw new NotSupportedException();
-		}
 
-		public override void SetLength(long value)
-		{
-			throw new NotSupportedException();
-		}
-
-		public override void Write(byte[] buffer, int offset, int count)
-		{
-			p.lastSignalReceived = World.UtcNow;
-			var dst = new byte[count];
-			Array.Copy(buffer, offset, dst, 0, count);
-			pendingWriteText += p.Encoding.GetString(dst);
-		}
 	}
-
-	public Stream OpenRead()
-	{
-		return Stream.Null;
-	}
-
-	public Stream OpenWrite()
-	{
-		return myWriteStream;
-	}
-
-
 }

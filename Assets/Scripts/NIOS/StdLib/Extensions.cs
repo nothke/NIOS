@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace StdLib
+namespace NIOS.StdLib
 {
 	public static class Extensions
 	{

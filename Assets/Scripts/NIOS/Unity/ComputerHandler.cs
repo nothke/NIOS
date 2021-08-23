@@ -7,44 +7,47 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ComputerHandler : NeitriBehavior
+namespace NIOS.Unity
 {
-	public string computerId;
-
-	TextDisplayDevice terminal;
-
-	Computer machine;
-	bool typingEnabled;
-
-	public TextDisplayDevice[] displays;
-	public InputDevice input; 
-
-	protected override void OnEnable()
+	public class ComputerHandler : NeitriBehavior
 	{
-		if (string.IsNullOrEmpty(computerId)) computerId = this.GetInstanceID().ToString();
+		public string computerId;
 
-		machine = new Computer();
-		machine.computerId = computerId;
+		TextDisplayDevice terminal;
 
-		machine.ConnectDevice(input);
-		displays.ForEach(machine.ConnectDevice);
-		machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_1.txt"));
-		machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_2.txt"));
+		Computer machine;
+		bool typingEnabled;
+
+		public TextDisplayDevice[] displays;
+		public InputDevice input;
+
+		protected override void OnEnable()
+		{
+			if (string.IsNullOrEmpty(computerId)) computerId = this.GetInstanceID().ToString();
+
+			machine = new Computer();
+			machine.computerId = computerId;
+
+			machine.ConnectDevice(input);
+			displays.ForEach(machine.ConnectDevice);
+			machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_1.txt"));
+			machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_2.txt"));
+		}
+
+		public void BootUp()
+		{
+			machine.Bootup();
+		}
+
+		protected override void OnDisable()
+		{
+			ShutDown();
+		}
+
+		public void ShutDown()
+		{
+			machine.ShutDown();
+		}
+
 	}
-
-	public void BootUp()
-	{
-		machine.Bootup();
-	}
-
-	protected override void OnDisable()
-	{
-		ShutDown();
-	}
-
-	public void ShutDown()
-	{
-		machine.ShutDown();
-	}
-
 }

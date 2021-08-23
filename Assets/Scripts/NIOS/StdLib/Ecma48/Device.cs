@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace StdLib.Ecma48
+namespace NIOS.StdLib.Ecma48
 {
 
 	/// <summary>
