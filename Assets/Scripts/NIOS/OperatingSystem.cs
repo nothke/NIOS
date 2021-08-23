@@ -85,9 +85,12 @@ namespace NIOS
                     Session.argsUsedToStart = args;
                     Session.cmdLineUsedToStart = filePath + " " + args.Join(" ");
 
+                    // Temporary solution for finding type by namespace
+                    const string NAMESPACE_PREFIX = "NIOS.";
+
                     if (data.StartsWith(InitializeFileSystem.MakeType))
                     {
-                        var typeName = data.Substring(InitializeFileSystem.MakeType.Length);
+                        var typeName = NAMESPACE_PREFIX + data.Substring(InitializeFileSystem.MakeType.Length);
                         var type = Assembly.GetExecutingAssembly().GetType(typeName);
                         if (type == null) throw new Error("unable to find type " + data);
                         var instance = Activator.CreateInstance(type);
