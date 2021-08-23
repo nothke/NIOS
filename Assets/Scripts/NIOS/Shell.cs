@@ -67,11 +67,15 @@ namespace NIOS
             catch (Error e)
             {
                 w.WriteLine(e.Message);
+
+                throw;
             }
             catch (Exception e)
             {
                 w.WriteLine(cmd + ", failed to execute, exception:");
                 w.WriteLine(e.ToString());
+
+                throw;
             }
         }
 

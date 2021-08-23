@@ -64,9 +64,10 @@ namespace NIOS
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogException(e);
                 api.Console.WriteLine();
                 api.Console.WriteLine(e);
+
+                throw;
             }
         }
 
@@ -85,16 +86,31 @@ namespace NIOS
                     Session.argsUsedToStart = args;
                     Session.cmdLineUsedToStart = filePath + " " + args.Join(" ");
 
-                    // Temporary solution for finding type by namespace
-                    const string NAMESPACE_PREFIX = "NIOS.";
-
                     if (data.StartsWith(InitializeFileSystem.MakeType))
                     {
-                        var typeName = NAMESPACE_PREFIX + data.Substring(InitializeFileSystem.MakeType.Length);
+                        var typeName = data.Substring(InitializeFileSystem.MakeType.Length);
+
                         var type = Assembly.GetExecutingAssembly().GetType(typeName);
-                        if (type == null) throw new Error("unable to find type " + data);
+                        if (type == null)
+                        {
+                            // As scripts are now namespaced, the system files should have NIOS. prefix
+                            // If they do not, warn that the system should be reinstalled (or disc file manually edited)
+                            const string NAMESPACE_PREFIX = "NIOS.";
+                            typeName = NAMESPACE_PREFIX + typeName;
+
+                            type = Assembly.GetExecutingAssembly().GetType(typeName);
+                            if (type == null)
+                            {
+                                throw new Error("Found a type without NIOS. prefix. Please reinstall the system. TypeName: " + typeName);
+                            }
+
+                            throw new Error("unable to find type " + typeName);
+                        }
+
                         var instance = Activator.CreateInstance(type);
-                        if (instance == null) throw new Error("failed to create instance of " + type);
+
+                        if (instance == null) 
+                            throw new Error("failed to create instance of " + type);
                         var program = (ProgramBase)instance;
 
                         program.Session = Session;
