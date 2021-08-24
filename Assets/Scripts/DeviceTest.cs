@@ -44,8 +44,6 @@ public class DeviceTest : MonoBehaviour, IDevice
             set => throw new NotImplementedException();
         }
 
-        int maxByteLength = 0;
-
         Encoding encoding;
 
         public ReadStream(Encoding encoding)
