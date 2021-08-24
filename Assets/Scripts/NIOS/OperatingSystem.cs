@@ -60,7 +60,7 @@ namespace NIOS
             }
             catch (ThreadInterruptedException e)
             {
-                UnityEngine.Debug.Log("Thread interrupted. If shutting down the computer it is expected.\n" + e);
+                //UnityEngine.Debug.Log("Thread interrupted. If shutting down the computer it is expected.\n" + e);
             }
             catch (Exception e)
             {
