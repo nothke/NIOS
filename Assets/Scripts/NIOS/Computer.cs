@@ -23,6 +23,8 @@ namespace NIOS
         public event Action<IDevice> OnDeviceConnected;
         public event Action<IDevice> OnDeviceDisconnected;
 
+        public ISystemClock clock;
+
         public IDevice GetFirstDeviceByPrefix(string prefix)
         {
             var dev = devices.FirstOrDefault(d => d.DeviceType.NamePrefix == prefix);
@@ -96,6 +98,10 @@ namespace NIOS
         public void Bootup(IDevice preferredBootDevice = null)
         {
             isRunning = true;
+
+            // If no clock is specified before booting, create a real system clock
+            if (clock == null)
+                clock = new RealClock();
 
             CreateThread(() =>
             {

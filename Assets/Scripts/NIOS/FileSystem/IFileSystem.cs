@@ -35,5 +35,7 @@ namespace NIOS
         // void SetAccessControl(FileEntry file, FileSecurity fileSecurity);
 
         Stream Open(FileEntry file, FileMode mode, FileAccess access, FileShare share);
+
+        ISystemClock Clock { get; }
     }
 }

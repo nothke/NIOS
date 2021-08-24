@@ -36,10 +36,14 @@ namespace NIOS
 
         DirEntry mountPoint;
 
+        public ISystemClock Clock { get; private set; }
+
         public CsvFileSystem(DirEntry mountPoint, FileEntry device, OperatingSystem os)
         {
             this.device = device;
             this.mountPoint = mountPoint;
+
+            Clock = os.Machine.clock;
 
             Load();
         }

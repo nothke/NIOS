@@ -37,10 +37,10 @@ namespace NIOS
                     ExecuteCommand(Session, line);
                 });
                 t.Start();
-                var started = World.UtcNow;
+                var started = OperatingSystem.Machine.clock.UtcNow;
                 while (t != null && t.IsAlive)
                 {
-                    if (started.AddSeconds(10) < World.UtcNow)
+                    if (started.AddSeconds(10) < OperatingSystem.Machine.clock.UtcNow)
                     {
                         t.Abort();
                         t = null;

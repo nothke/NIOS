@@ -15,6 +15,9 @@ namespace NIOS
     {
         DirEntry mountPoint;
         OperatingSystem os;
+
+        public ISystemClock Clock => os.Machine.clock;
+
         public SysFs(DirEntry mountPoint, OperatingSystem os)
         {
             this.mountPoint = mountPoint;
@@ -73,7 +76,7 @@ namespace NIOS
 
         public void CreateDirectory(DirEntry directory, DirectorySecurity directorySecurity)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void DeleteDirectory(DirEntry directory)

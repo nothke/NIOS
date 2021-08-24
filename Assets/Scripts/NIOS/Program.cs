@@ -64,8 +64,10 @@ namespace NIOS
     {
         public override void Main(string[] arguments)
         {
-            if (arguments.Contains("-u") || arguments.Contains("--utc") || arguments.Contains("--univeral")) Console.WriteLine(World.UtcNow);
-            Console.WriteLine(DateTime.Now);
+            if (arguments.Contains("-u") || arguments.Contains("--utc") || arguments.Contains("--univeral"))
+                Console.WriteLine(OperatingSystem.Machine.clock.UtcNow);
+            else
+                Console.WriteLine(OperatingSystem.Machine.clock.Now);
         }
     }
 
