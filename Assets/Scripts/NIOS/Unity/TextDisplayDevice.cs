@@ -70,12 +70,14 @@ namespace NIOS.Unity
 
 		void DisplayUpdate()
 		{
+			// TODO: Temporarily replaced World with DateTime
+
 			const int timeoutSeconds = 60;
-			if (lastSignalReceived.IsOver(seconds: timeoutSeconds).InPastComparedTo(World.UtcNow))
+			if (lastSignalReceived.IsOver(seconds: timeoutSeconds).InPastComparedTo(DateTime.UtcNow))
 			{
-				if (lastUpdate.IsOver(seconds: 1).InPastComparedTo(World.UtcNow))
+				if (lastUpdate.IsOver(seconds: 1).InPastComparedTo(DateTime.UtcNow))
 				{
-					lastUpdate = World.UtcNow;
+					lastUpdate = DateTime.UtcNow;
 					var backupLastSingalReceived = lastSignalReceived;
 
 					client.EraseDisplay();
@@ -84,9 +86,9 @@ namespace NIOS.Unity
 					if (backupLastSingalReceived == DateTime.MinValue)
 						client.WriteLine("no signal received");
 					else
-						client.WriteLine("last signal received " + World.UtcNow.Subtract(backupLastSingalReceived).TotalSeconds.Round().ToInt() + " seconds ago");
+						client.WriteLine("last signal received " + DateTime.UtcNow.Subtract(backupLastSingalReceived).TotalSeconds.Round().ToInt() + " seconds ago");
 					client.WriteLine("debug info:");
-					client.WriteLine("	current time: " + World.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
+					client.WriteLine("	current time: " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
 					client.WriteLine("	columns: " + device.ColumnsCount);
 					client.WriteLine("	rows: " + device.RowsCount);
 					client.WriteLine();
@@ -212,7 +214,7 @@ namespace NIOS.Unity
 
 			public override void Write(byte[] buffer, int offset, int count)
 			{
-				p.lastSignalReceived = World.UtcNow;
+				p.lastSignalReceived = DateTime.UtcNow; // TODO: Replaced World with DateTime
 				var dst = new byte[count];
 				Array.Copy(buffer, offset, dst, 0, count);
 				pendingWriteText += p.Encoding.GetString(dst);

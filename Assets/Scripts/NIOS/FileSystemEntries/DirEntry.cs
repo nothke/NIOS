@@ -265,6 +265,7 @@ namespace NIOS
 				Parent.Refresh();
 			}
 			exists = true;
+
 			if (fileSystem != null)
 				fileSystem.CreateDirectory(this, directorySecurity);
 		}

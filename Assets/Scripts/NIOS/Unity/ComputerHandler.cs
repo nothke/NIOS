@@ -9,45 +9,58 @@ using UnityEngine.UI;
 
 namespace NIOS.Unity
 {
-	public class ComputerHandler : NeitriBehavior
-	{
-		public string computerId;
+    public class ComputerHandler : NeitriBehavior
+    {
+        public string computerId;
 
-		TextDisplayDevice terminal;
+        TextDisplayDevice terminal;
 
-		Computer machine;
-		bool typingEnabled;
+        Computer machine;
+        bool typingEnabled;
 
-		public TextDisplayDevice[] displays;
-		public InputDevice input;
+        public TextDisplayDevice[] displays;
+        public InputDevice input;
+        public DeviceTest input2;
 
-		protected override void OnEnable()
-		{
-			if (string.IsNullOrEmpty(computerId)) computerId = this.GetInstanceID().ToString();
+        public bool bootAtStart;
 
-			machine = new Computer();
-			machine.computerId = computerId;
+        protected override void OnEnable()
+        {
+            if (string.IsNullOrEmpty(computerId)) computerId = this.GetInstanceID().ToString();
 
-			machine.ConnectDevice(input);
-			displays.ForEach(machine.ConnectDevice);
-			machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_1.txt"));
-			machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_2.txt"));
-		}
+            machine = new Computer();
+            machine.computerId = computerId;
 
-		public void BootUp()
-		{
-			machine.Bootup();
-		}
+            if (input) machine.ConnectDevice(input);
+            if (input2) machine.ConnectDevice(input2);
+            displays.ForEach(machine.ConnectDevice);
+            machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_1.txt"));
+            machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_2.txt"));
 
-		protected override void OnDisable()
-		{
-			ShutDown();
-		}
+            if (bootAtStart)
+                StartCoroutine(BootCo());
+        }
 
-		public void ShutDown()
-		{
-			machine.ShutDown();
-		}
+        IEnumerator BootCo()
+        {
+            yield return new WaitForSeconds(0.5f);
+            BootUp();
+        }
 
-	}
+        public void BootUp()
+        {
+            machine.Bootup();
+        }
+
+        protected override void OnDisable()
+        {
+            ShutDown();
+        }
+
+        public void ShutDown()
+        {
+            machine.ShutDown();
+        }
+
+    }
 }

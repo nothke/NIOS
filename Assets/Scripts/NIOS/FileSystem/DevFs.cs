@@ -14,6 +14,9 @@ namespace NIOS
     {
         DirEntry mountPoint;
         OperatingSystem os;
+
+        public ISystemClock Clock => os.Machine.clock;
+
         public DevFs(DirEntry mountPoint, OperatingSystem os)
         {
             this.mountPoint = mountPoint;

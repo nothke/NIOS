@@ -36,17 +36,36 @@ namespace NIOS
 			this.name = name;
 
 			if (parent != null)
+			{
 				fileSystem = parent.fileSystem;
 
-			CreationTimeUtc = World.UtcNow;
-			LastWriteTimeUtc = World.UtcNow;
-			LastAccessTimeUtc = World.UtcNow;
+				if (fileSystem == null)
+					throw new Exception("No fileSystem found on a parent, this is not allowed");
 
-			CreationTime = World.Now;
-			LastWriteTime = World.Now;
-			LastAccessTime = World.Now;
+				var clock = fileSystem.Clock;
+
+				CreationTimeUtc = clock.UtcNow;
+				LastWriteTimeUtc = clock.UtcNow;
+				LastAccessTimeUtc = clock.UtcNow;
+
+				CreationTime = clock.Now;
+				LastWriteTime = clock.Now;
+				LastAccessTime = clock.Now;
+			}
 		}
 
+		public void ResetCreationTime()
+        {
+			var clock = fileSystem.Clock;
+
+			CreationTimeUtc = clock.UtcNow;
+			LastWriteTimeUtc = clock.UtcNow;
+			LastAccessTimeUtc = clock.UtcNow;
+
+			CreationTime = clock.Now;
+			LastWriteTime = clock.Now;
+			LastAccessTime = clock.Now;
+		}
 
 		//
 		// Summary:

@@ -64,6 +64,10 @@ namespace NIOS
             }
             catch (Exception e)
             {
+                // If the session doesn't exist yet we can't even write to console, so just throw
+                if (session == null)
+                    throw;
+
                 api.Console.WriteLine();
                 api.Console.WriteLine(e);
 
@@ -177,6 +181,10 @@ namespace NIOS
             Machine.OnDeviceDisconnected += RemoveDevice;
 
             rootDirectory = DirEntry.MakeRoot();
+            var rootFs = new RootFs(this);
+            rootDirectory.fileSystem = rootFs;
+            rootDirectory.ResetCreationTime();
+            rootDirectory.Refresh();
 
             var dev = rootDirectory.CreateSubdirectory("dev");
             var devFs = new DevFs(dev, this);
@@ -215,9 +223,9 @@ namespace NIOS
             }
             else
             {
-                var stdOut = GetFileEntry("/tmp/std-out-" + World.UtcNow.Ticks + ".txt");
+                var stdOut = GetFileEntry("/tmp/std-out-" + Machine.clock.UtcNow.Ticks + ".txt");
                 session.stdOut = new StreamWriter(stdOut.OpenWrite()) { AutoFlush = true };
-                var stdErr = GetFileEntry("/tmp/std-err-" + World.UtcNow.Ticks + ".txt");
+                var stdErr = GetFileEntry("/tmp/std-err-" + Machine.clock.UtcNow.Ticks + ".txt");
                 session.stdErr = new StreamWriter(stdErr.OpenWrite()) { AutoFlush = true };
             }
 
@@ -225,11 +233,10 @@ namespace NIOS
 
             api.Console.WriteLine("niOS [version 0.0.1.0a]");
             api.Console.WriteLine("(c) 2016 Neitri Industries. All rights reserved.");
-            api.Console.WriteLine(World.UtcNow);
+            api.Console.WriteLine(Machine.clock.UtcNow);
             //.WriteLine("This software is protected by following patents US14761 NI4674765 EU41546 US145-7756 US765-577")
             //.WriteLine("Any unauthorized reproduction of this software is strictly prohibited.")
             api.Console.WriteLine();
-
 
             if (!api.File.Exists("/bin/sh"))
             {
