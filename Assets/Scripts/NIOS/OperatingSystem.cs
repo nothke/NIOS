@@ -181,8 +181,7 @@ namespace NIOS
             Machine.OnDeviceDisconnected += RemoveDevice;
 
             rootDirectory = DirEntry.MakeRoot();
-            // TODO: Temporary fake rootFs made of sysFs
-            var rootFs = new SysFs(rootDirectory, this);
+            var rootFs = new RootFs(this);
             rootDirectory.fileSystem = rootFs;
             rootDirectory.ResetCreationTime();
             rootDirectory.Refresh();
