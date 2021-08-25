@@ -13,10 +13,7 @@ namespace NIOS.Unity
     {
         public string computerId;
 
-        TextDisplayDevice terminal;
-
         Computer machine;
-        bool typingEnabled;
 
         public TextDisplayDevice[] displays;
         public InputDevice input;
@@ -34,7 +31,11 @@ namespace NIOS.Unity
             if (input) machine.ConnectDevice(input);
             if (input2) machine.ConnectDevice(input2);
             displays.ForEach(machine.ConnectDevice);
-            machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_1.txt"));
+
+            var disk1 = new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_1.txt");
+            disk1.bootProgram = new OperatingSystem();
+
+            machine.ConnectDevice(disk1);
             machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_2.txt"));
 
             if (bootAtStart)
@@ -47,6 +48,7 @@ namespace NIOS.Unity
             BootUp();
         }
 
+        [ContextMenu("Boot")]
         public void BootUp()
         {
             machine.Bootup();
@@ -57,6 +59,7 @@ namespace NIOS.Unity
             ShutDown();
         }
 
+        [ContextMenu("Shutdown")]
         public void ShutDown()
         {
             machine.ShutDown();

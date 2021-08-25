@@ -366,7 +366,7 @@ namespace NIOS
             {
                 var p = "/";
                 if (arguments.Length == 1) p = Path.GetFullPath(arguments[0]);
-                new InitializeFileSystem().Install(Session, p);
+                new FileSystemInitializer().Install(Session, p);
             }
             else
             {

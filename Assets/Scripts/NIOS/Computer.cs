@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 using NIOS.StdLib;
@@ -27,8 +25,13 @@ namespace NIOS
 
         public IDevice GetFirstDeviceByPrefix(string prefix)
         {
-            var dev = devices.FirstOrDefault(d => d.DeviceType.NamePrefix == prefix);
-            return dev;
+            foreach (var d in devices)
+            {
+                if (d.DeviceType.NamePrefix.Equals(prefix))
+                    return d;
+            }
+
+            return null;
         }
 
         void Write(Action<StreamWriter> streamWriterAction)
@@ -105,29 +108,53 @@ namespace NIOS
 
             CreateThread(() =>
             {
-                if (preferredBootDevice == null) preferredBootDevice = devices.FirstOrDefault(d => d.DeviceType == DeviceType.SCSIDevice);
+                IBootSectorProgram bootProgram = null;
+
+                // Find a bootable drive
                 if (preferredBootDevice == null)
-                    WriteLine("unable to boot up, no block devices attached");
-                /*
+                {
+                    foreach (var d in devices)
+                    {
+                        if (d.DeviceType == DeviceType.SCSIDevice &&
+                            d is RealFileDevice rfd)
+                        {
+                            preferredBootDevice = d;
+                            bootProgram = rfd.bootProgram;
+                            break;
+                        }
+                    }
+                }
+
+                if (preferredBootDevice == null)
+                    WriteLine("unable to boot up, no bootable devices attached");
+
+#if READ_BOOT_SECTOR
                 string bootSector;
                 using (var sr = new StreamReader(preferredBootDevice.OpenRead()))
                     bootSector = sr.ReadToEnd();
 
-                if (bootSector == OperatingSystem.bootSectorBase64)*/
+                if (bootSector == OperatingSystem.bootSectorBase64)
+                    throw new Exception("Boot sector found");
+#endif
+
+                if (bootProgram != null)
                 {
                     WriteLine("found operating system");
-                    Write("booting up");
+                    WriteLine("booting up");
+
                     for (int i = 0; i < 20; i++)
                     {
                         Write(".");
-                        Thread.Sleep(10);
+                        Thread.Sleep(50);
                     }
 
                     Clear();
 
-                    var os = new OperatingSystem();
-                    os.StartUp(this);
+                    bootProgram.StartUp(this);
                 }
+                else
+                    WriteLine("no operating system found");
+
             }).Start();
         }
     }
