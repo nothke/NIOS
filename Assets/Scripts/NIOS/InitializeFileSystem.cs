@@ -36,8 +36,6 @@ namespace NIOS
 				IsClass(bin.GetFileEntry("touch"), typeof(TouchProgram));
 				IsClass(bin.GetFileEntry("ls"), typeof(LsProgram));
 				IsClass(bin.GetFileEntry("brute"), typeof(BruteForceAttackPasswdProgram));
-				
-				os.TryInstallProgram("installcs", typeof(InstallProgramProgram));
 			}
 			var sbin = root.CreateSubdirectory("sbin");
 			var etc = root.CreateSubdirectory("etc");
