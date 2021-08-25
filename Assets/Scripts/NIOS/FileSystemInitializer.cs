@@ -16,7 +16,7 @@ namespace NIOS
         protected void InstallProgram(string filename, Type type)
         {
             var file = bin.GetFileEntry(filename);
-            file.WriteAllText(MakeType + type.FullName);
+            file.WriteAllText(MakeType + type.AssemblyQualifiedName);
         }
 
         public virtual void Install(Session s, string dirPath)

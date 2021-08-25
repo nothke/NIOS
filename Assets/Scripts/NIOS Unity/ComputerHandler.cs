@@ -9,6 +9,16 @@ using UnityEngine.UI;
 
 namespace NIOS.Unity
 {
+    public class MyInitializer : FileSystemInitializer
+    {
+        public override void Install(Session s, string dirPath)
+        {
+            base.Install(s, dirPath);
+
+            InstallProgram("installcs", typeof(InstallProgramProgram));
+        }
+    }
+
     public class ComputerHandler : NeitriBehavior
     {
         public string computerId;
@@ -33,7 +43,7 @@ namespace NIOS.Unity
             displays.ForEach(machine.ConnectDevice);
 
             var disk1 = new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_1.txt");
-            disk1.bootProgram = new OperatingSystem();
+            disk1.bootProgram = new OperatingSystem() { fileSystemInitializer = new MyInitializer() };
 
             machine.ConnectDevice(disk1);
             machine.ConnectDevice(new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_2.txt"));

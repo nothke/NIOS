@@ -96,20 +96,18 @@ namespace NIOS
                     {
                         var typeName = data.Substring(FileSystemInitializer.MakeType.Length);
 
-                        var type = Assembly.GetExecutingAssembly().GetType(typeName);
+                        Type type;
+                        try
+                        {
+                            type = Type.GetType(typeName, true);
+                        }
+                        catch (TypeLoadException e)
+                        {
+                            throw e;
+                        }
+
                         if (type == null)
                         {
-                            // As scripts are now namespaced, the system files should have NIOS. prefix
-                            // If they do not, warn that the system should be reinstalled (or disc file manually edited)
-                            const string NAMESPACE_PREFIX = "NIOS.";
-                            typeName = NAMESPACE_PREFIX + typeName;
-
-                            type = Assembly.GetExecutingAssembly().GetType(typeName);
-                            if (type == null)
-                            {
-                                throw new Error("Found a type without NIOS. prefix. Please reinstall the system. TypeName: " + typeName);
-                            }
-
                             throw new Error("unable to find type " + typeName);
                         }
 
@@ -375,13 +373,13 @@ namespace NIOS
             }
 
             var dir = api.Directory.GetDirEntry("/bin");
-            
+
             if (File.Exists(dir.FullName + name))
             {
                 api.Console.WriteLine("warning: attempting to install a program, but program already exists at the same path");
                 return false;
             }
-            
+
             var file = dir.GetFileEntry(name);
             file.WriteAllText(MakeType + csClass.FullName);
 

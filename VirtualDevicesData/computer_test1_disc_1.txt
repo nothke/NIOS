@@ -29,21 +29,23 @@
 0,29,0,mnt
 0,30,0,media
 0,31,0,srv
-0,32,24,asd
-1,2,1,make_c_sharp_instance_of:NIOS.Shell
-1,3,1,make_c_sharp_instance_of:NIOS.EchoProgram
-1,4,1,make_c_sharp_instance_of:NIOS.GrepProgram
-1,5,1,make_c_sharp_instance_of:NIOS.PwdProgram
-1,6,1,make_c_sharp_instance_of:NIOS.SleepProgram
-1,7,1,make_c_sharp_instance_of:NIOS.DateProgram
-1,8,1,make_c_sharp_instance_of:NIOS.MkDirProgram
-1,9,1,make_c_sharp_instance_of:NIOS.RmProgram
-1,10,1,make_c_sharp_instance_of:NIOS.RmDirProgram
-1,11,1,make_c_sharp_instance_of:NIOS.CatProgram
-1,12,1,make_c_sharp_instance_of:NIOS.TouchProgram
-1,13,1,make_c_sharp_instance_of:NIOS.LsProgram
-1,14,1,make_c_sharp_instance_of:NIOS.BruteForceAttackPasswdProgram
+0,32,1,installcs
+0,33,24,asd
+1,2,1,"make_c_sharp_instance_of:NIOS.Shell, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,3,1,"make_c_sharp_instance_of:NIOS.EchoProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,4,1,"make_c_sharp_instance_of:NIOS.GrepProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,5,1,"make_c_sharp_instance_of:NIOS.PwdProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,6,1,"make_c_sharp_instance_of:NIOS.SleepProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,7,1,"make_c_sharp_instance_of:NIOS.DateProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,8,1,"make_c_sharp_instance_of:NIOS.MkDirProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,9,1,"make_c_sharp_instance_of:NIOS.RmProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,10,1,"make_c_sharp_instance_of:NIOS.RmDirProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,11,1,"make_c_sharp_instance_of:NIOS.CatProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,12,1,"make_c_sharp_instance_of:NIOS.TouchProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,13,1,"make_c_sharp_instance_of:NIOS.LsProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+1,14,1,"make_c_sharp_instance_of:NIOS.BruteForceAttackPasswdProgram, NIOS, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
 1,17,1,"asd,aIeH2P8UTFAsf1z/qv4sxYjYYHn53ogwTCawy5nOkcY=
 "
 1,18,1,
 1,26,0,whnE2G/OgJMAXb39cHgSRgOckpLZgduQOjbPfcGd6BbnewK7dtaEuCDFjksiSs4Wm6Qbdi88LkE+NJ05/gPRY3SnFfR1VtAtGNlxE/KPbfBnuOIdgnHmqkzBfUI5S7kd9CrWew==
+1,32,1,"make_c_sharp_instance_of:InstallProgramProgram, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
