@@ -13,6 +13,8 @@ namespace NIOS
         Guid guid;
         public Guid Guid { get { return guid; } }
 
+        public IBootSectorProgram bootProgram;
+
         public RealFileDevice(string filePath)
         {
             this.filePath = filePath;

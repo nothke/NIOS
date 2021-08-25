@@ -105,29 +105,56 @@ namespace NIOS
 
             CreateThread(() =>
             {
-                if (preferredBootDevice == null) preferredBootDevice = devices.FirstOrDefault(d => d.DeviceType == DeviceType.SCSIDevice);
+                // Find the boot drive
+                if (preferredBootDevice == null)
+                {
+                    foreach (var d in devices)
+                    {
+                        preferredBootDevice = d.DeviceType == DeviceType.SCSIDevice ? d : null;
+                        if (preferredBootDevice != null)
+                            break;
+                    }
+                }
+                
                 if (preferredBootDevice == null)
                     WriteLine("unable to boot up, no block devices attached");
-                /*
+
+#if READ_BOOT_SECTOR
                 string bootSector;
                 using (var sr = new StreamReader(preferredBootDevice.OpenRead()))
                     bootSector = sr.ReadToEnd();
 
-                if (bootSector == OperatingSystem.bootSectorBase64)*/
+                if (bootSector == OperatingSystem.bootSectorBase64)
+                    throw new Exception("Boot sector found");
+#endif
+
+                // Find the boot os
+                IBootSectorProgram bootProgram = null;
+                if (preferredBootDevice is RealFileDevice rfd)
+                {
+                    bootProgram = rfd.bootProgram;
+                }
+                else
+                    WriteLine("boot device is not RealFileDevice");
+
+                if (bootProgram != null)
                 {
                     WriteLine("found operating system");
-                    Write("booting up");
+                    WriteLine("booting up");
+
                     for (int i = 0; i < 20; i++)
                     {
                         Write(".");
-                        Thread.Sleep(10);
+                        Thread.Sleep(50);
                     }
 
                     Clear();
 
-                    var os = new OperatingSystem();
-                    os.StartUp(this);
+                    bootProgram.StartUp(this);
                 }
+                else
+                    WriteLine("no operating system found");
+
             }).Start();
         }
     }
