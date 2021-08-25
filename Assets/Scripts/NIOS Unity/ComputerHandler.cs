@@ -13,10 +13,7 @@ namespace NIOS.Unity
     {
         public string computerId;
 
-        TextDisplayDevice terminal;
-
         Computer machine;
-        bool typingEnabled;
 
         public TextDisplayDevice[] displays;
         public InputDevice input;

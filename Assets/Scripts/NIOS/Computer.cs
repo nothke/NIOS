@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 using NIOS.StdLib;
@@ -27,8 +25,13 @@ namespace NIOS
 
         public IDevice GetFirstDeviceByPrefix(string prefix)
         {
-            var dev = devices.FirstOrDefault(d => d.DeviceType.NamePrefix == prefix);
-            return dev;
+            foreach (var d in devices)
+            {
+                if (d.DeviceType.NamePrefix.Equals(prefix))
+                    return d;
+            }
+
+            return null;
         }
 
         void Write(Action<StreamWriter> streamWriterAction)
@@ -112,7 +115,7 @@ namespace NIOS
                 {
                     foreach (var d in devices)
                     {
-                        if (d.DeviceType == DeviceType.SCSIDevice && 
+                        if (d.DeviceType == DeviceType.SCSIDevice &&
                             d is RealFileDevice rfd)
                         {
                             preferredBootDevice = d;
@@ -121,7 +124,7 @@ namespace NIOS
                         }
                     }
                 }
-                
+
                 if (preferredBootDevice == null)
                     WriteLine("unable to boot up, no bootable devices attached");
 

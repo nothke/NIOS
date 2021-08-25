@@ -33,6 +33,8 @@ namespace NIOS
 
         public Computer Machine { get; private set; }
 
+        public FileSystemInitializer fileSystemInitializer;
+
         void AddProgram(ProgramBase program)
         {
             programs.Add(program);
@@ -58,7 +60,7 @@ namespace NIOS
             {
                 SetupSystem();
             }
-            catch (ThreadInterruptedException e)
+            catch (ThreadInterruptedException) // e
             {
                 //UnityEngine.Debug.Log("Thread interrupted. If shutting down the computer it is expected.\n" + e);
             }
@@ -90,9 +92,9 @@ namespace NIOS
                     Session.argsUsedToStart = args;
                     Session.cmdLineUsedToStart = filePath + " " + args.Join(" ");
 
-                    if (data.StartsWith(InitializeFileSystem.MakeType))
+                    if (data.StartsWith(FileSystemInitializer.MakeType))
                     {
-                        var typeName = data.Substring(InitializeFileSystem.MakeType.Length);
+                        var typeName = data.Substring(FileSystemInitializer.MakeType.Length);
 
                         var type = Assembly.GetExecutingAssembly().GetType(typeName);
                         if (type == null)
@@ -113,7 +115,7 @@ namespace NIOS
 
                         var instance = Activator.CreateInstance(type);
 
-                        if (instance == null) 
+                        if (instance == null)
                             throw new Error("failed to create instance of " + type);
                         var program = (ProgramBase)instance;
 
@@ -241,7 +243,12 @@ namespace NIOS
             if (!api.File.Exists("/bin/sh"))
             {
                 api.Console.WriteLine("/bin/sh not found, re/installing system");
-                new InitializeFileSystem().Install(this.session, "/");
+
+                // If no custom initializer is provided, use the default one
+                if (fileSystemInitializer != null)
+                    fileSystemInitializer.Install(session, "/");
+                else
+                    new FileSystemInitializer().Install(this.session, "/");
             }
 
             if (input.Exists)
