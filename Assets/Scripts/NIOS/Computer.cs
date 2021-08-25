@@ -105,19 +105,25 @@ namespace NIOS
 
             CreateThread(() =>
             {
-                // Find the boot drive
+                IBootSectorProgram bootProgram = null;
+
+                // Find a bootable drive
                 if (preferredBootDevice == null)
                 {
                     foreach (var d in devices)
                     {
-                        preferredBootDevice = d.DeviceType == DeviceType.SCSIDevice ? d : null;
-                        if (preferredBootDevice != null)
+                        if (d.DeviceType == DeviceType.SCSIDevice && 
+                            d is RealFileDevice rfd)
+                        {
+                            preferredBootDevice = d;
+                            bootProgram = rfd.bootProgram;
                             break;
+                        }
                     }
                 }
                 
                 if (preferredBootDevice == null)
-                    WriteLine("unable to boot up, no block devices attached");
+                    WriteLine("unable to boot up, no bootable devices attached");
 
 #if READ_BOOT_SECTOR
                 string bootSector;
@@ -127,15 +133,6 @@ namespace NIOS
                 if (bootSector == OperatingSystem.bootSectorBase64)
                     throw new Exception("Boot sector found");
 #endif
-
-                // Find the boot os
-                IBootSectorProgram bootProgram = null;
-                if (preferredBootDevice is RealFileDevice rfd)
-                {
-                    bootProgram = rfd.bootProgram;
-                }
-                else
-                    WriteLine("boot device is not RealFileDevice");
 
                 if (bootProgram != null)
                 {
