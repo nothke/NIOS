@@ -13,7 +13,7 @@ using NIOS.StdLib;
 
 namespace NIOS.Unity
 {
-	public class TextDisplayDevice : NeitriBehavior, IDevice
+	public class TextDisplayDevice : NeitriBehavior, IDevice, ITerminal
 	{
 		public Text textComponent;
 		public DeviceType DeviceType { get { return DeviceType.Display; } }
@@ -28,7 +28,9 @@ namespace NIOS.Unity
 		Guid guid;
 		public Guid Guid { get { return guid; } }
 
-		protected override void Start()
+        public StdLib.Ecma48.Device Device => device;
+
+        protected override void Start()
 		{
 			base.Start();
 

@@ -40,7 +40,9 @@ namespace NIOS.Unity
 
             if (input) machine.ConnectDevice(input);
             if (input2) machine.ConnectDevice(input2);
-            displays.ForEach(machine.ConnectDevice);
+
+            foreach (var d in displays)
+                machine.ConnectDevice(d);
 
             var disk1 = new RealFileDevice(Application.dataPath + "/../VirtualDevicesData/computer_" + computerId + "_disc_1.txt");
             disk1.bootProgram = new OperatingSystem() { fileSystemInitializer = new MyInitializer() };

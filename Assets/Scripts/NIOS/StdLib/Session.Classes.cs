@@ -38,6 +38,11 @@ namespace NIOS
 				{
 					return OperatingSystem.NewThread(Session, start);
 				}
+
+				public void Sleep(int miliseconds)
+                {
+					System.Threading.Thread.Sleep(miliseconds);
+                }
 			}
 
 			public class ConsoleClass : HelperBase

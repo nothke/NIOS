@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using NIOS;
+using NIOS.StdLib;
 
 public class TestProgram : ProgramBase
 {
@@ -42,7 +43,16 @@ public class InstallProgramProgram : ProgramBase
                 string name = arguments[0];
                 string typeStr = arguments[1];
 
-                System.Type type = System.Type.GetType(typeStr);
+                System.Type type;
+                try
+                {
+                    type = System.Type.GetType(typeStr, true);
+                }
+                catch (System.Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    throw;
+                }
 
                 if (type == null)
                 {
@@ -103,7 +113,7 @@ public class AddFileProgram : ProgramBase
                         Console.WriteLine("file at path " + arguments[0] + " already exists.");
                         return;
                     }
-                    
+
                     // TODO: incomplete
 
                     break;
@@ -123,5 +133,53 @@ public class AddFileProgram : ProgramBase
         //Console.WriteLine("<real_filepath>                    Copies files from real life system into current folder retaining the name");
         Console.WriteLine("<real_filepath> <game_filepath>    Copies files from real life system into game disk, relative to current folder");
         Console.WriteLine("-h, help                           Help");
+    }
+}
+
+public class DrawWindowProgram : ProgramBase
+{
+    public override void Main(string[] arguments)
+    {
+        NIOS.StdLib.Ecma48.Device device = null;
+
+        int width = 0;
+        int height = 0;
+        foreach (var d in OperatingSystem.Machine.Devices)
+        {
+            if (d is ITerminal terminal)
+            {
+                Console.WriteLine("Found terminal device: " + d.Guid);
+                device = terminal.Device;
+                width = (int)device.ColumnsCount;
+                height = (int)device.RowsCount;
+                break;
+            }
+        }
+
+        if (width == 0 || height == 0)
+        {
+            Console.WriteLine("Couldn't get terminal size");
+            return;
+        }
+
+        OperatingSystem.Machine.Clear();
+
+        var sb = new System.Text.StringBuilder(width * height);
+
+        device.Parse('┌');
+        sb.Append('#'); // ┌
+        sb.Append('#', width - 2); // ─
+        sb.Append('#'); // ┐
+
+        for (int i = 0; i < height - 10; i++)
+        {
+            sb.Append('#'); // │
+            sb.Append(' ', width - 2);
+            sb.Append('#');
+        }
+
+        Console.Out.Write(sb.ToString());
+
+        Thread.Sleep(1000);
     }
 }

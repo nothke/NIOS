@@ -80,4 +80,9 @@ namespace NIOS
 		Stream OpenRead();
 		Stream OpenWrite();
 	}
+
+	public interface ITerminal
+    {
+		StdLib.Ecma48.Device Device { get; }
+    }
 }

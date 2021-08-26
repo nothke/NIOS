@@ -381,7 +381,7 @@ namespace NIOS
             }
 
             var file = dir.GetFileEntry(name);
-            file.WriteAllText(MakeType + csClass.FullName);
+            file.WriteAllText(MakeType + csClass.AssemblyQualifiedName);
 
             return true;
         }
